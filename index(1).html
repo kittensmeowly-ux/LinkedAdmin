@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LinkedAdmin</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#111318;color:#e9eaf0}
+.app{display:flex;min-height:100vh}.side{width:235px;background:#181b21;border-right:1px solid #2b2f38;padding:20px 13px}
+.logo{font-size:20px;font-weight:700;padding:7px 10px 20px}.logo span{color:#8b5cf6}.section{font-size:10px;color:#707784;text-transform:uppercase;letter-spacing:.08em;padding:12px 10px 5px}
+.nav button{width:100%;text-align:left;background:none;border:0;color:#aeb3bf;padding:10px 12px;border-radius:8px;margin:2px 0;cursor:pointer;font-size:13px}
+.nav button:hover,.nav button.active{background:#272b34;color:#fff}.main{flex:1;padding:28px;max-width:1250px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.title{font-size:26px;font-weight:700}.sub{color:#8f95a3;font-size:13px;margin-top:4px}
+.actions{display:flex;gap:8px}.btn{background:#7c3aed;color:white;border:0;border-radius:7px;padding:9px 13px;cursor:pointer}.btn.secondary{background:#252a33;border:1px solid #343a45}
+.page{display:none}.page.active{display:block}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:#191c22;border:1px solid #2b3039;border-radius:10px;padding:17px}.label{color:#9298a6;font-size:11px}.value{font-size:25px;font-weight:700;margin-top:7px}.panel{background:#191c22;border:1px solid #2b3039;border-radius:10px;padding:18px;margin-top:16px}.panel h2{font-size:15px;margin:0 0 14px}
+.row{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #292e37;padding:12px 0;font-size:13px;gap:12px}.row:first-child{border-top:0}.muted{color:#8f95a3;font-size:12px}.badge{padding:4px 8px;border-radius:99px;background:#272c37;font-size:10px}
+.chat{height:420px;display:grid;grid-template-rows:1fr auto;background:#191c22;border:1px solid #2b3039;border-radius:10px;overflow:hidden}.messages{padding:17px;overflow:auto}.msg{margin-bottom:15px;max-width:78%}.msg.me{margin-left:auto}.who{font-size:10px;color:#8f95a3;margin-bottom:4px}.bubble{padding:9px 11px;border-radius:8px;background:#232832;border:1px solid #303641;font-size:13px;line-height:1.4}.me .bubble{background:#32205c}.composer{display:flex;gap:8px;padding:11px;border-top:1px solid #2b3039}.composer input,.field{background:#111318;color:#eee;border:1px solid #343a45;border-radius:7px;padding:9px;min-width:0}.composer input{flex:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.empty{padding:24px;text-align:center;color:#8f95a3;font-size:13px}.event{border-left:3px solid #7c3aed;padding:10px 12px;margin:8px 0;background:#20242c;border-radius:0 7px 7px 0}.event strong{font-size:13px}.event small{display:block;color:#8f95a3;margin-top:3px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{min-height:70px;border:1px solid #2b3039;border-radius:6px;padding:7px;background:#171a20}.day b{font-size:11px}.today{border-color:#7c3aed}.eventdot{margin-top:7px;font-size:10px;color:#b9a2ff}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.modalbox{width:min(460px,100%);background:#191c22;border:1px solid #343a45;border-radius:10px;padding:20px}.modalbox h2{margin-top:0}.modalbox input{width:100%;margin:6px 0 12px;background:#111318;color:#eee;border:1px solid #343a45;border-radius:7px;padding:10px}
+@media(max-width:850px){.side{width:190px}.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}@media(max-width:600px){.app{display:block}.side{width:auto;border-right:0;border-bottom:1px solid #2b2f38}.main{padding:16px}.grid{grid-template-columns:1fr 1fr}.top{align-items:flex-start;gap:10px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+<div class="logo"><span>◆</span> LinkedAdmin</div>
+<div class="section">Workspace</div>
+<nav class="nav">
+<button class="active" data-page="dashboard">Dashboard</button>
+<button data-page="chat">💬 Chat</button>
+<button data-page="members">👥 Members</button>
+<button data-page="schedule">📅 Schedule</button>
+<button data-page="tasks">✓ Tasks</button>
+<button data-page="files">▣ Files</button>
+</nav>
+<div class="section">Management</div>
+<nav class="nav">
+<button data-page="ranks">⚑ Ranks</button>
+<button data-page="settings">⚙ Settings</button>
+</nav>
+</aside>
+
+<main class="main">
+<div class="top">
+<div><div class="title" id="title">Dashboard</div><div class="sub" id="subtitle">Your linked workspace</div></div>
+<div class="actions"><button class="btn secondary" id="invite">Invite</button><button class="btn" id="newEvent">New event</button></div>
+</div>
+
+<section class="page active" id="dashboard">
+<div class="grid">
+<div class="card"><div class="label">MEMBERS</div><div class="value" id="memberCount">1</div></div>
+<div class="card"><div class="label">UPCOMING EVENTS</div><div class="value" id="eventCount">0</div></div>
+<div class="card"><div class="label">OPEN TASKS</div><div class="value" id="taskCount">0</div></div>
+<div class="card"><div class="label">WORKSPACES</div><div class="value">1</div></div>
+</div>
+<div class="two">
+<div class="panel"><h2>Today</h2><div id="todayList" class="empty">No events scheduled.</div></div>
+<div class="panel"><h2>Recent activity</h2><div id="activity"><div class="row"><span>LinkedAdmin opened</span><span class="muted">Just now</span></div></div></div>
+</div>
+</section>
+
+<section class="page" id="chat"><div class="chat"><div class="messages" id="messages"><div class="msg"><div class="who">You · now</div><div class="bubble">Welcome to LinkedAdmin.</div></div></div><form class="composer" id="chatForm"><input id="chatInput" placeholder="Write a message…" autocomplete="off"><button class="btn">Send</button></form></div></section>
+
+<section class="page" id="members"><div class="panel"><h2>Members</h2><div id="memberList"></div></div></section>
+
+<section class="page" id="schedule"><div class="panel"><h2>Schedule</h2><div class="calendar" id="calendar"></div></div><div class="panel"><h2>Upcoming</h2><div id="eventList" class="empty">No events yet.</div></div></section>
+
+<section class="page" id="tasks"><div class="panel"><h2>Tasks <button class="btn" id="addTask">+ Add task</button></h2><div id="taskList" class="empty">No tasks yet.</div></div></section>
+
+<section class="page" id="files"><div class="panel"><h2>Shared files</h2><div class="empty">No files have been shared yet.</div></div></section>
+
+<section class="page" id="ranks"><div class="panel"><h2>Ranks</h2><div class="muted">Create your own workspace hierarchy. The Host rank cannot be removed.</div><div id="rankList"></div><button class="btn" id="addRank" style="margin-top:12px">+ Add rank</button></div></section>
+
+<section class="page" id="settings"><div class="panel"><h2>Workspace settings</h2>
+<div class="row"><span>Workspace name</span><input class="field" id="nameInput" value="LinkedAdmin"></div>
+<div class="row"><span>Your rank</span><span class="badge">Host</span></div>
+<div class="row"><span>Workspace ID</span><span class="muted">LOCAL-DEMO</span></div>
+</div></section>
+</main>
+</div>
+
+<div class="modal" id="modal"><div class="modalbox"><h2 id="modalTitle">Invite user</h2><div id="modalBody"></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn secondary" id="cancel">Cancel</button><button class="btn" id="confirm">Create</button></div></div></div>
+
+<script>
+(()=> {
+const root=document.body;
+let members=[{name:'You',email:'you@example.com',rank:'Host'}];
+let ranks=['Host','Member'];
+let tasks=[];
+let events=[];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const log=a=>{$('#activity').insertAdjacentHTML('afterbegin',`<div class="row"><span>${esc(a)}</span><span class="muted">Just now</span></div>`)};
+function renderMembers(){$('#memberCount').textContent=members.length;$('#memberList').innerHTML=members.map((m,i)=>`<div class="row"><span><strong>${esc(m.name)}</strong><br><span class="muted">${esc(m.email)}</span></span><span><span class="badge">${esc(m.rank)}</span> ${i?`<button class="btn secondary removeMember" data-i="${i}">Remove</button>`:''}</span></div>`).join('');root.querySelectorAll('.removeMember').forEach(b=>b.onclick=()=>{members.splice(+b.dataset.i,1);renderMembers();log('Member removed')})}
+function renderRanks(){$('#rankList').innerHTML=ranks.map((r,i)=>`<div class="row"><span>${esc(r)}</span><span>${r==='Host'?'<span class="badge">Protected</span>':`<button class="btn secondary rename" data-i="${i}">Rename</button> <button class="btn secondary deleteRank" data-i="${i}">Remove</button>`}</span></div>`).join('');root.querySelectorAll('.deleteRank').forEach(b=>b.onclick=()=>{ranks.splice(+b.dataset.i,1);renderRanks()});root.querySelectorAll('.rename').forEach(b=>b.onclick=()=>{const n=prompt('New rank name:',ranks[+b.dataset.i]);if(n&&n.trim()){ranks[+b.dataset.i]=n.trim();renderRanks()}})}
+function renderTasks(){ $('#taskCount').textContent=tasks.length; $('#taskList').innerHTML=tasks.length?tasks.map((t,i)=>`<div class="row"><span>${esc(t)}</span><button class="btn secondary done" data-i="${i}">Complete</button></div>`).join(''):'<div class="empty">No tasks yet.</div>';root.querySelectorAll('.done').forEach(b=>b.onclick=()=>{tasks.splice(+b.dataset.i,1);renderTasks();log('Task completed')})}
+function renderEvents(){ $('#eventCount').textContent=events.length; $('#eventList').innerHTML=events.length?events.map(e=>`<div class="event"><strong>${esc(e.name)}</strong><small>${esc(e.date)} · ${esc(e.time)}</small></div>`).join(''):'<div class="empty">No events yet.</div>';$('#todayList').innerHTML=events.length?events.slice(0,3).map(e=>`<div class="event"><strong>${esc(e.name)}</strong><small>${esc(e.date)} · ${esc(e.time)}</small></div>`).join(''):'<div class="empty">No events scheduled.</div>'}
+function renderCalendar(){let d=new Date(),year=d.getFullYear(),month=d.getMonth(),first=new Date(year,month,1).getDay(),days=new Date(year,month+1,0).getDate();let out='';for(let i=0;i<first;i++)out+='<div class="day"></div>';for(let n=1;n<=days;n++){let today=n===d.getDate();out+=`<div class="day ${today?'today':''}"><b>${n}</b>${events.filter(e=>e.date===`${year}-${String(month+1).padStart(2,'0')}-${String(n).padStart(2,'0')}`).map(e=>`<div class="eventdot">${esc(e.name)}</div>`).join('')}</div>`}$('#calendar').innerHTML=out}
+function openModal(type){$('#modal').classList.add('show');if(type==='invite'){ $('#modalTitle').textContent='Invite user';$('#modalBody').innerHTML='<label class="muted">Email address</label><input id="modalInput" type="email" placeholder="person@example.com"><p class="muted">This prototype stores the invitation locally. A real version would send an email and require the recipient to accept.</p>';$('#confirm').textContent='Invite';$('#confirm').onclick=()=>{let v=$('#modalInput').value.trim();if(v){members.push({name:v.split('@')[0],email:v,rank:'Member'});renderMembers();log('Invitation created for '+v);closeModal()}}}else{ $('#modalTitle').textContent='New event';$('#modalBody').innerHTML='<label class="muted">Event name</label><input id="eventName" placeholder="Team meeting"><label class="muted">Date</label><input id="eventDate" type="date"><label class="muted">Time</label><input id="eventTime" type="time">';$('#confirm').textContent='Create';$('#confirm').onclick=()=>{let n=$('#eventName').value.trim(),d=$('#eventDate').value,t=$('#eventTime').value;if(n&&d){events.push({name:n,date:d,time:t||'Time not set'});renderEvents();renderCalendar();log('Event created: '+n);closeModal()}}}}
+function closeModal(){$('#modal').classList.remove('show')}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===b.dataset.page));$('#title').textContent=b.textContent.replace(/^[^A-Za-z]+/,'')});
+$('#chatForm').onsubmit=e=>{e.preventDefault();let v=$('#chatInput').value.trim();if(!v)return;$('#messages').insertAdjacentHTML('beforeend',`<div class="msg me"><div class="who">You · now</div><div class="bubble">${esc(v)}</div></div>`);$('#chatInput').value='';$('#messages').scrollTop=$('#messages').scrollHeight};
+$('#invite').onclick=()=>openModal('invite');$('#newEvent').onclick=()=>openModal('event');$('#cancel').onclick=closeModal;$('#addTask').onclick=()=>{let v=prompt('Task name:');if(v&&v.trim()){tasks.push(v.trim());renderTasks();log('Task created')}};$('#addRank').onclick=()=>{let v=prompt('Rank name:');if(v&&v.trim()){ranks.push(v.trim());renderRanks()}};$('#nameInput').oninput=e=>$('#subtitle').textContent=(e.target.value||'LinkedAdmin')+' workspace';
+renderMembers();renderRanks();renderTasks();renderEvents();renderCalendar();
+})();
+</script>
+</body>
+</html>
